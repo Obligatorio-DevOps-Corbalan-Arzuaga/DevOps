@@ -21,6 +21,17 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
+# Internet Gateway para el LB
+resource "aws_internet_gateway" "main" {
+  for_each = toset(var.environments)
+
+  vpc_id = aws_vpc.main_vpc[each.value].id
+
+  tags = {
+    Name = "${each.value}-internet-gateway"
+  }
+}
+
 # Subnets
 resource "aws_subnet" "public_subnet_1" {
   for_each = toset(var.environments)
@@ -75,6 +86,23 @@ resource "aws_security_group" "main_sg" {
   }
 }
 
+# Load Balancer
+resource "aws_lb" "main" {
+  for_each = toset(var.projects)
+
+  name                        = "${substr(each.value, 0, 10)}-${substr(terraform.workspace, 0, 10)}-alb"
+  internal                    = false
+  load_balancer_type          = "application"
+  security_groups             = [aws_security_group.main_sg[each.value].id]
+  subnets                     = [aws_subnet.public_subnet_1[each.value].id, aws_subnet.public_subnet_2[each.value].id]
+  enable_deletion_protection  = false
+
+  tags = {
+    Name = "${each.value}-${terraform.workspace}-alb"
+  }
+}
+
+# Task definition
 resource "aws_ecs_task_definition" "task" {
   for_each = toset(var.projects)
 
