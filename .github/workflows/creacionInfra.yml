@@ -69,7 +69,7 @@ jobs:
           echo "Cambiando al workspace: $ENV"
 
           # Selecciona o crea el workspace
-          terraform workspace select "$ENV" || terraform workspace new "$ENV"
+          terraform workspace new "$ENV"
 
           # Iterar sobre los servicios
           for SERVICE in "${SERVICES[@]}"; do
