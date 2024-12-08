@@ -61,7 +61,7 @@ jobs:
     - name: Aplicar Terraform
       run: |
         # Servicios y ambientes
-        SERVICES=("orders_service" "payments_service" "products_service" "shipping_service")
+        SERVICES=("orders-service" "payments-service" "products-service" "shipping-service")
         ENVIRONMENTS=("dev" "staging" "prod")
 
         # Iterar sobre los ambientes
