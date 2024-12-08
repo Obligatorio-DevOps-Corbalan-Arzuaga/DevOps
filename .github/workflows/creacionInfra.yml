@@ -48,7 +48,7 @@ jobs:
             echo "${SERVICE}_${ENV}_IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
           done
         done
-
+    
     - name: Configurar Terraform
       uses: hashicorp/setup-terraform@v2
       with:
@@ -75,6 +75,11 @@ jobs:
           for SERVICE in "${SERVICES[@]}"; do
             IMAGE_URI_VAR="${SERVICE}_${ENV}_IMAGE_URI"
             DOCKER_IMAGE_URI="${!IMAGE_URI_VAR}"  # Obtiene el valor de la variable dinámica
+
+            if [ -z "$DOCKER_IMAGE_URI" ]; then
+              echo "ERROR: No se encontró una imagen para $SERVICE en el ambiente $ENV"
+              exit 1
+            fi
 
             echo "Aplicando Terraform para $SERVICE en el ambiente $ENV con la imagen $DOCKER_IMAGE_URI"
             terraform apply -auto-approve -var="project=$SERVICE" -var="docker-image=$DOCKER_IMAGE_URI"
