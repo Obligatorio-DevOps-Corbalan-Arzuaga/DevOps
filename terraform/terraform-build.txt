@@ -1,19 +1,19 @@
 terraform init
 
 terraform workspace new develop
-terraform apply -auto-approve -var="project=shipping-service"
-terraform apply -auto-approve -var="project=products-service"
-terraform apply -auto-approve -var="project=orders-service"
-terraform apply -auto-approve -var="project=payments-service"
+terraform apply -auto-approve -var="project=shipping-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/shipping-service-dev"
+terraform apply -auto-approve -var="project=products-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/products-service-dev"
+terraform apply -auto-approve -var="project=orders-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/orders-service-dev"
+terraform apply -auto-approve -var="project=payments-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/payments-service-dev"
 
 terraform workspace new staging
-terraform apply -auto-approve -var="project=shipping-service"
-terraform apply -auto-approve -var="project=products-service"
-terraform apply -auto-approve -var="project=orders-service"
-terraform apply -auto-approve -var="project=payments-service"
+terraform apply -auto-approve -var="project=shipping-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/shipping-service-staging"
+terraform apply -auto-approve -var="project=products-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/products-service-staging"
+terraform apply -auto-approve -var="project=orders-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/orders-service-staging"
+terraform apply -auto-approve -var="project=payments-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/payments-service-staging"
 
 terraform workspace new production
-terraform apply -auto-approve -var="project=shipping-service"
-terraform apply -auto-approve -var="project=products-service"
-terraform apply -auto-approve -var="project=orders-service"
-terraform apply -auto-approve -var="project=payments-service"
+terraform apply -auto-approve -var="project=shipping-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/shipping-service-prod"
+terraform apply -auto-approve -var="project=products-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/products-service-prod"
+terraform apply -auto-approve -var="project=orders-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/orders-service-prod"
+terraform apply -auto-approve -var="project=payments-service" -var="docker-image=634518649880.dkr.ecr.us-east-1.amazonaws.com/payments-service-prod"
