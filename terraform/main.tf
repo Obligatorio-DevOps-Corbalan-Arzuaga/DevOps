@@ -7,6 +7,15 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# Se crean los repositorios ECR
+resource "aws_ecr_repository" "main_ecr_repo" {
+  name                 = "${var.project}-${terraform.workspace}-ecr-repo"
+  image_tag_mutability = "MUTABLE"
+  tags = {
+    Name = "${var.project}-${terraform.workspace}-ecr-repo"
+  }
+}
+
 # Se crea la VPC
 resource "aws_vpc" "main_vpc" {
   cidr_block = "10.0.0.0/16"
