@@ -74,7 +74,7 @@ jobs:
 
           # Iterar sobre los servicios
           for SERVICE in "${SERVICES[@]}"; do
-            IMAGE_URI_VAR="$${SERVICE//-/_}_${ENV}_IMAGE_URI"
+            IMAGE_URI_VAR="${SERVICE//-/_}_${ENV}_IMAGE_URI"
             DOCKER_IMAGE_URI="${!IMAGE_URI_VAR}"  # Obtiene el valor de la variable dinámica
 
             if [ -z "$DOCKER_IMAGE_URI" ]; then
