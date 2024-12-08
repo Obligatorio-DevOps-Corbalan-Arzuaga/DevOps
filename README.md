@@ -36,3 +36,29 @@ Para orquestar y gestionar los contenedores de manera eficiente en la nube.
 **Trello:** Para gestionar tareas y coordinar el trabajo de los equipos de manera visual y ágil.
 
 **SonarCloud:** Para analizar la calidad del código, identificar problemas y garantizar estándares de desarrollo.
+
+## Terraform:
+
+Utilizamos Terraform como herramienta de infraestructura como codigo, automatizando la creación de la infraestructura necesaria para una aplicación en AWS. Configurando una red segura, establece subredes, habilitando la conexión a Internet, gestionando el tráfico de red y desplegando la aplicación en contenedores Docker de forma escalable utilizando AWS ECS y Fargate, lo que permite ejecutar los contenedores sin necesidad de administrar las máquinas físicas. Un Elastic Load Balancer se encarga de distribuir el tráfico entre los contenedores, mientras que un Security Group regula el acceso a la aplicación.
+
+Mediante terraform, creamos los recursos de AWS:
+
+**VPC**: Una red virtual privada por ambiente, donde se alojaran todos los aplicativos de un mismo ambiente.
+
+**Internet Gateway**: Para permitir el acceso a internet desde la VPC.
+
+**Subnets**: Dos subredes publicas por VPC, en dos diferentes zonas de disponiblidad, us-east-1b y us-east-2b.
+
+**Route Table**: Para gestionar el trafico entre las subredes y la VPC mediante el Internet Gateway.
+
+**Security groups**: Un grupo de seguridad por ambiente, que permite el trafico HTTP en el puerto 80 de las subredes.
+
+**Load Balancer**: Un balanceador de carga por cada aplicativo en cada ambiente, que distribuye las solicitudes en las multiples instancias de un aplicativo.
+
+**Target Group**: Para definir las instancias en las que el LB distribuira el trafico.
+
+**ECS clusters**: Un contenedor virtual por ambiente, donde se alojaran los 4 contendores Docker de los aplicativos BackEnd de un mismo ambiente.
+
+**Task definitions**: Para definir como ese ejecutaran los contendores Docker. Se utiliza el servicio Fargate para simplificar la administracion la insfraestructura.
+
+**ECS Services**: Para administrar el numero de contenedor a ejecutar y mantener la aplicacion estable.
