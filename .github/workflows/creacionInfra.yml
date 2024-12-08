@@ -45,7 +45,8 @@ jobs:
             LATEST_TAG=$(get_latest_image_tag "$REPO_NAME")
             IMAGE_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${LATEST_TAG}"
             echo "Última imagen para $REPO_NAME: $IMAGE_URI"
-            echo "${SERVICE}_${ENV}_IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+            VAR_NAME="${SERVICE//-/_}_${ENV}_IMAGE_URI"
+            echo "$VAR_NAME=$IMAGE_URI" >> $GITHUB_ENV
           done
         done
     
@@ -73,7 +74,7 @@ jobs:
 
           # Iterar sobre los servicios
           for SERVICE in "${SERVICES[@]}"; do
-            IMAGE_URI_VAR="${SERVICE}_${ENV}_IMAGE_URI"
+            IMAGE_URI_VAR="$${SERVICE//-/_}_${ENV}_IMAGE_URI"
             DOCKER_IMAGE_URI="${!IMAGE_URI_VAR}"  # Obtiene el valor de la variable dinámica
 
             if [ -z "$DOCKER_IMAGE_URI" ]; then
