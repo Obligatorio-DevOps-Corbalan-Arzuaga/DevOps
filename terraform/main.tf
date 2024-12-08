@@ -3,6 +3,11 @@ variable "project" {
   type        = string
 }
 
+variable "docker-image" {
+  description = "El tag de la imagen Docker que debe desplegarse"
+  type        = string
+}
+
 provider "aws" {
   region = "us-east-1"
 }
@@ -161,8 +166,8 @@ resource "aws_ecs_task_definition" "task" {
 
     container_definitions = jsonencode([{
         name      = "${var.project}-${terraform.workspace}-container"
-        #image     = "${var.docker-image}"
-        image     = "stacksimplify/nginxapp1:latest"
+        image     = "${var.docker-image}"
+        #image     = "stacksimplify/nginxapp1:latest"
         # environment = [
         #     {
         #         name  = ""
