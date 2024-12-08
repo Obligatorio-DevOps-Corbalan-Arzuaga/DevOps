@@ -26,6 +26,7 @@ jobs:
         SERVICES=("orders-service" "payments-service" "products-service" "shipping-service")
         ENVIRONMENTS=("dev" "staging" "prod")
         AWS_REGION="${{ secrets.AWS_REGION }}"
+        AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
         # Funcion para obtener la ultima imagen de un repositorio
         get_latest_image_tag() {
@@ -42,8 +43,9 @@ jobs:
           for ENV in "${ENVIRONMENTS[@]}"; do
             REPO_NAME="${SERVICE}-${ENV}"
             LATEST_TAG=$(get_latest_image_tag "$REPO_NAME")
-            echo "Última imagen para $REPO_NAME: $LATEST_TAG"
-            echo "${SERVICE}_${ENV}_IMAGE=$LATEST_TAG" >> $GITHUB_ENV
+            IMAGE_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${LATEST_TAG}"
+            echo "Última imagen para $REPO_NAME: $IMAGE_URI"
+            echo "${SERVICE}_${ENV}_IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
           done
         done
 
@@ -59,7 +61,7 @@ jobs:
     - name: Aplicar Terraform
       run: |
         # Servicios y ambientes
-        SERVICES=("orders-service" "payments-service" "products-service" "shipping-service")
+        SERVICES=("orders_service" "payments_service" "products_service" "shipping_service")
         ENVIRONMENTS=("dev" "staging" "prod")
 
         # Iterar sobre los ambientes
@@ -71,10 +73,10 @@ jobs:
 
           # Iterar sobre los servicios
           for SERVICE in "${SERVICES[@]}"; do
-            IMAGE_VAR="${SERVICE}_${ENV}_IMAGE"
-            DOCKER_IMAGE="${!IMAGE_VAR}"  # Obtiene el valor de la variable dinámica
+            IMAGE_URI_VAR="${SERVICE}_${ENV}_IMAGE_URI"
+            DOCKER_IMAGE_URI="${!IMAGE_URI_VAR}"  # Obtiene el valor de la variable dinámica
 
-            echo "Aplicando Terraform para $SERVICE en el ambiente $ENV con la imagen $DOCKER_IMAGE"
-            terraform apply -auto-approve -var="project=$SERVICE" -var="docker-image=$DOCKER_IMAGE"
+            echo "Aplicando Terraform para $SERVICE en el ambiente $ENV con la imagen $DOCKER_IMAGE_URI"
+            terraform apply -auto-approve -var="project=$SERVICE" -var="docker-image=$DOCKER_IMAGE_URI"
           done
         done
