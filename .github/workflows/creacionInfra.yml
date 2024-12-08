@@ -63,8 +63,8 @@ jobs:
       run: |
        ls -l terraform
 
-       - name: Generar el plan de Terraform
-       run: |
+    - name: Generar el plan de Terraform
+      run: |
          # Servicios y ambientes
          SERVICES=("orders-service" "payments-service" "products-service" "shipping-service")
          ENVIRONMENTS=("dev" "staging" "prod")
