@@ -59,6 +59,11 @@ jobs:
       working-directory: terraform
       run: terraform init
 
+    - name: Verificar archivos Terraform
+      run: |
+       ls -l terraform
+
+
     - name: Aplicar Terraform
       run: |
         # Servicios y ambientes
@@ -69,8 +74,12 @@ jobs:
         for ENV in "${ENVIRONMENTS[@]}"; do
           echo "Cambiando al workspace: $ENV"
 
-          # Selecciona o crea el workspace
-          terraform workspace new "$ENV"
+          # Cambiar al workspace o crearlo si no existe
+          if terraform workspace list | grep -q "$ENV"; then
+            terraform workspace select "$ENV"
+          else
+            terraform workspace new "$ENV"
+          fi
 
           # Iterar sobre los servicios
           for SERVICE in "${SERVICES[@]}"; do
