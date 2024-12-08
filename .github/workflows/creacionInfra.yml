@@ -63,6 +63,38 @@ jobs:
       run: |
        ls -l terraform
 
+       - name: Generar el plan de Terraform
+       run: |
+         # Servicios y ambientes
+         SERVICES=("orders-service" "payments-service" "products-service" "shipping-service")
+         ENVIRONMENTS=("dev" "staging" "prod")
+ 
+         # Iterar sobre los ambientes
+         for ENV in "${ENVIRONMENTS[@]}"; do
+           echo "Cambiando al workspace: $ENV"
+ 
+           # Cambiar al workspace o crearlo si no existe
+           if terraform workspace list | grep -q "$ENV"; then
+             terraform workspace select "$ENV"
+           else
+             terraform workspace new "$ENV"
+           fi
+ 
+           # Iterar sobre los servicios
+           for SERVICE in "${SERVICES[@]}"; do
+             IMAGE_URI_VAR="${SERVICE//-/_}_${ENV}_IMAGE_URI"
+             DOCKER_IMAGE_URI="${!IMAGE_URI_VAR}"  # Obtiene el valor de la variable dinámica
+ 
+             if [ -z "$DOCKER_IMAGE_URI" ]; then
+               echo "ERROR: No se encontró una imagen para $SERVICE en el ambiente $ENV"
+               exit 1
+             fi
+ 
+             echo "Generando plan de Terraform para $SERVICE en el ambiente $ENV con la imagen $DOCKER_IMAGE_URI"
+             terraform plan -out=tfplan -var="project=$SERVICE" -var="docker-image=$DOCKER_IMAGE_URI"
+           done
+         done
+
 
     - name: Aplicar Terraform
       run: |
