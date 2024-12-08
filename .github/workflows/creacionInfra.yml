@@ -53,11 +53,15 @@ jobs:
     - name: Configurar Terraform
       uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: 1.5.0
+        terraform_version: 1.5.6
 
     - name: Inicializar Terraform
       working-directory: terraform
       run: terraform init
+
+    - name: Verificar archivos Terraform
+      run: |
+       ls -l terraform
 
     - name: Aplicar Terraform
       run: |
@@ -65,12 +69,19 @@ jobs:
         SERVICES=("orders-service" "payments-service" "products-service" "shipping-service")
         ENVIRONMENTS=("dev" "staging" "prod")
 
+        echo "Inicializando Terraform..."
+        terraform init
+
         # Iterar sobre los ambientes
         for ENV in "${ENVIRONMENTS[@]}"; do
           echo "Cambiando al workspace: $ENV"
 
-          # Selecciona o crea el workspace
-          terraform workspace new "$ENV"
+          # Cambiar al workspace o crearlo si no existe
+          if terraform workspace list | grep -q "$ENV"; then
+            terraform workspace select "$ENV"
+          else
+            terraform workspace new "$ENV"
+          fi
 
           # Iterar sobre los servicios
           for SERVICE in "${SERVICES[@]}"; do
@@ -82,6 +93,8 @@ jobs:
               exit 1
             fi
 
+            echo "Comprobando carpeta terraform"
+            ls -l terraform
             echo "Aplicando Terraform para $SERVICE en el ambiente $ENV con la imagen $DOCKER_IMAGE_URI"
             terraform apply -auto-approve -var="project=$SERVICE" -var="docker-image=$DOCKER_IMAGE_URI"
           done
