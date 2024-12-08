@@ -49,6 +49,27 @@ resource "aws_subnet" "public_subnet_2" {
   }
 }
 
+# Crear route table
+resource "aws_route_table" "main" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+}
+
+# Asociar la table a las subnets
+resource "aws_route_table_association" "main_association" {
+  subnet_id      = aws_subnet.public_subnet_1.id
+  route_table_id = aws_route_table.main.id
+}
+
+resource "aws_route_table_association" "main_association_2" {
+  subnet_id      = aws_subnet.public_subnet_2.id
+  route_table_id = aws_route_table.main.id
+}
+
 # Se crean los Security Group, uno por App backend
 resource "aws_security_group" "main_sg" {
   name        = "${var.project}-sg"
@@ -110,8 +131,6 @@ resource "aws_lb_listener" "http_listener" {
     target_group_arn = aws_lb_target_group.ecs_tg.arn
   }
 }
-
-
 
 resource "aws_ecs_cluster" "main" {
     name = "${terraform.workspace}-ecs-cluster" // Se utiliza el mismo cluster para todos los proyectos de un mismo ambiente
