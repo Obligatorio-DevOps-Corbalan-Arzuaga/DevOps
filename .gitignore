@@ -1,0 +1,13 @@
+# Ignorar el directorio .terraform
+.terraform
+
+# Ignorar archivos de estado de Terraform
+*.tfstate
+*.tfstate.backup
+
+# Archivos de bloqueo de Terraform
+*.lock.hcl
+
+# Archivos de salida de ejecución de Terraform
+.crash.log
+*.tfplan
