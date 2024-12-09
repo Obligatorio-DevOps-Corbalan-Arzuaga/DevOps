@@ -174,9 +174,11 @@ En este repositrorio se almacena toda la infraestructura del proyecto.
 Archivos terraform:
 ![Repos devops terraform](./doc-img/devops_tf.png)
 
+Para integrar nuevos cambios al repositorio de DevOps, pusimos en practica Feature Branch y revisio de codigo cruzada mediante Pull Request.
+
 ### Analisis de codigo estatico
 
-Para el analisis de codigo estatico de los repositorios de los microservicios, utilizamos la herramienta SonarCloud, la cual realiza analisis para detectar fallas, vulneravilidad o mejoras en el codigo.
+Para el analisis de codigo estatico de los repositorios de los microservicios, utilizamos la herramienta SonarCloud, la cual realiza analisis para detectar fallas, vulnerabilidades o mejoras en el codigo.
 
 Si alguna de estas fallas surge, el pipeline no seguira su ejecuccion, y el depliegue se cancelara.
 
@@ -205,3 +207,9 @@ Si alguna de estas fallas surge, el pipeline no seguira su ejecuccion, y el depl
         run: |
          echo "El estado del Quality Gate es: ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
 ```
+
+### Gestion de imagenes de contenedores
+Para gestionar y administrar las imagenes de los contenedores utilizamos ECR.
+Elegimos esta herramienta por sobre Docker Hub, para seguir la linea de servicios AWS que optamos por utilizar, obteniendo asi una integracion mas facil con AWS ECS.
+
+![Repositorios ECR](image.png)
