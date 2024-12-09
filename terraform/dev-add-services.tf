@@ -287,12 +287,12 @@ resource "aws_ecs_task_definition" "orders-dev-task" {
         name      = "orders-service-dev-container"
         image     = var.docker_images["orders-service-dev"]
        
-        # environment = [
-        #     {
-        #         name  = ""
-        #         value = ""
-        #     }
-        # ]
+        environment = [
+            {
+                name = "APP_ARGS"
+                value = "http://${aws_lb.payments-service-dev-alb.dns_name}:80 http://${aws_lb.shipping-service-dev-alb.dns_name}:80 http://${aws_lb.products-service-dev-alb.dns_name}:80"
+            }
+        ]
         essential = true
         portMappings = [{
             protocol      = "tcp"

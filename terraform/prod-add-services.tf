@@ -247,13 +247,10 @@ resource "aws_ecs_service" "orders-service-prod" {
     name                               = "orders-service-prod"
     cluster                            = aws_ecs_cluster.production-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.orders-prod-task.arn
-    desired_count                      = 2
-    deployment_minimum_healthy_percent = 50
+    desired_count                      = 1
+    deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
-    scheduling_strategy                = "REPLICA"
-
-    force_new_deployment = true
 
     network_configuration {
         subnets         = [aws_subnet.prod_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
@@ -287,17 +284,17 @@ resource "aws_ecs_task_definition" "orders-prod-task" {
         name      = "orders-service-prod-container"
         image     = var.docker_images["orders-service-prod"]
        
-        # environment = [
-        #     {
-        #         name  = ""
-        #         value = ""
-        #     }
-        # ]
+        environment = [
+            {
+                name = "APP_ARGS"
+                value = "http://${aws_lb.payments-service-prod-alb.dns_name}:8080 http://${aws_lb.shipping-service-prod-alb.dns_name}:8080 http://${aws_lb.products-service-prod-alb.dns_name}:8080"
+            }
+        ]
         essential = true
         portMappings = [{
-            protocol      = "tcp"
-            containerPort = 80
-            hostPort      = 80
+
+            containerPort = 8080
+            hostPort      = 8080
         }]
         logConfiguration = {
             logDriver = "awslogs"

@@ -5,6 +5,8 @@
 
 resource "aws_vpc" "prod_vpc" {
   cidr_block = "10.0.0.0/16"
+  instance_tenancy = "default"
+  enable_dns_hostnames = true
 
   tags = {
     Name = "prod_vpc"
@@ -24,7 +26,7 @@ resource "aws_internet_gateway" "prod" {
 resource "aws_subnet" "prod_public_subnet_1" {
   
   vpc_id = aws_vpc.prod_vpc.id
-  cidr_block              = "10.0.2.0/24"
+  cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1a"
 
@@ -35,7 +37,7 @@ resource "aws_subnet" "prod_public_subnet_1" {
 
 resource "aws_subnet" "prod_public_subnet_2" {
   vpc_id = aws_vpc.prod_vpc.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1b"
 
@@ -78,6 +80,13 @@ resource "aws_security_group" "prod_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -95,6 +104,8 @@ resource "aws_security_group" "prod_sg" {
 # ----------------------------------------------------------------------------------------------------------------------------
 resource "aws_vpc" "staging_vpc" {
   cidr_block = "10.0.0.0/16"
+  instance_tenancy = "default"
+  enable_dns_hostnames = true
 
   tags = {
     Name = "staging_vpc"
@@ -114,7 +125,7 @@ resource "aws_internet_gateway" "staging" {
 resource "aws_subnet" "staging_public_subnet_1" {
   
   vpc_id = aws_vpc.staging_vpc.id
-  cidr_block              = "10.0.2.0/24"
+  cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1a"
 
@@ -125,7 +136,7 @@ resource "aws_subnet" "staging_public_subnet_1" {
 
 resource "aws_subnet" "staging_public_subnet_2" {
   vpc_id = aws_vpc.staging_vpc.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1b"
 
@@ -168,6 +179,13 @@ resource "aws_security_group" "staging_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -185,6 +203,8 @@ resource "aws_security_group" "staging_sg" {
 # ----------------------------------------------------------------------------------------------------------------------------
 resource "aws_vpc" "dev_vpc" {
   cidr_block = "10.0.0.0/16"
+  instance_tenancy = "default"
+  enable_dns_hostnames = true
 
   tags = {
     Name = "dev_vpc"
@@ -204,7 +224,7 @@ resource "aws_internet_gateway" "dev" {
 resource "aws_subnet" "dev_public_subnet_1" {
   
   vpc_id = aws_vpc.dev_vpc.id
-  cidr_block              = "10.0.2.0/24"
+  cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1a"
 
@@ -215,7 +235,7 @@ resource "aws_subnet" "dev_public_subnet_1" {
 
 resource "aws_subnet" "dev_public_subnet_2" {
   vpc_id = aws_vpc.dev_vpc.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "us-east-1b"
 
@@ -254,6 +274,13 @@ resource "aws_security_group" "dev_sg" {
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
