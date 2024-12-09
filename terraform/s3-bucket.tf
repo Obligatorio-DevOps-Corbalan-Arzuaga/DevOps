@@ -1,54 +1,27 @@
-resource "aws_s3_bucket" "develop_bucket" {
-  bucket = "front-end-develop"
-  acl    = "public-read"
+provider "aws" {
+  region = "us-east-1"
+}
 
-  website {
-    index_document = "index.html"
+resource "aws_s3_bucket" "develop_s3_bucket" {
+  bucket = "react-develop-bucket"
+
+  tags = {
+    Name        = "react-develop-bucket"
   }
 }
 
-resource "aws_s3_bucket" "staging_bucket" {
-  bucket = "front-end-staging"
-  acl    = "public-read"
+resource "aws_s3_bucket" "staging_s3_bucket" {
+  bucket = "react-staging-bucket"
 
-  website {
-    index_document = "index.html"
+  tags = {
+    Name        = "react-staging-bucket"
   }
 }
 
-resource "aws_s3_bucket" "production_bucket" {
-  bucket = "front-end-production"
-  acl    = "public-read"
+resource "aws_s3_bucket" "production_s3_bucket" {
+  bucket = "react-production-bucket"
 
-  website {
-    index_document = "index.html"
+  tags = {
+    Name        = "react-production-bucket"
   }
-}
-
-# Se configura el acceso publico a la URL
-resource "aws_s3_bucket_public_access_block" "develop_block" {
-  bucket = aws_s3_bucket.develop_bucket.bucket
-
-  block_public_acls   = false
-  block_public_policy = false
-  ignore_public_acls  = false
-  restrict_public_buckets = false
-}
-
-resource "aws_s3_bucket_public_access_block" "staging_block" {
-  bucket = aws_s3_bucket.staging_bucket.bucket
-
-  block_public_acls   = false
-  block_public_policy = false
-  ignore_public_acls  = false
-  restrict_public_buckets = false
-}
-
-resource "aws_s3_bucket_public_access_block" "production_block" {
-  bucket = aws_s3_bucket.production_bucket.bucket
-
-  block_public_acls   = false
-  block_public_policy = false
-  ignore_public_acls  = false
-  restrict_public_buckets = false
 }

@@ -9,29 +9,27 @@ resource "aws_ecs_service" "products-service-prod" {
     cluster                            = aws_ecs_cluster.production-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.products-prod-task.arn
     desired_count                      = 2
-    deployment_minimum_healthy_percent = 50
+    deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
     scheduling_strategy                = "REPLICA"
 
-    force_new_deployment = true
-
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
+        subnets         = [aws_subnet.prod_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
         security_groups = [aws_security_group.prod_sg.id]
         assign_public_ip = true
     }
 
     load_balancer {
       target_group_arn = aws_lb_target_group.products-service-prod-tg.arn
-      container_name   = "products-service-dev-container"
-      container_port   = 80
+      container_name   = "products-service-prod-container"
+      container_port   = 8080
     }
 
     depends_on = [
-        aws_ecs_task_definition.task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_ecs_task_definition.products-prod-task,
+        aws_lb_listener.http_listener_products_prod,
+        aws_lb_target_group.products-service-prod-tg,
     ]
 }
 
@@ -45,7 +43,7 @@ resource "aws_ecs_task_definition" "products-prod-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "products-prod-container"
+        name      = "products-service-prod-container"
         image     = var.docker_images["products-service-prod"]
        
         # environment = [
@@ -56,9 +54,9 @@ resource "aws_ecs_task_definition" "products-prod-task" {
         # ]
         essential = true
         portMappings = [{
-            protocol      = "tcp"
-            containerPort = 80
-            hostPort      = 80
+            protocol = "tcp"
+            containerPort = 8080
+            hostPort      = 8080
         }]
         logConfiguration = {
             logDriver = "awslogs"
@@ -83,22 +81,18 @@ resource "aws_ecs_task_definition" "products-prod-task" {
 # ----------------------------------------------------------------------------------------------------------------------------
 
 
-
-
 resource "aws_ecs_service" "shipping-service-prod" {
     name                               = "shipping-service-prod"
     cluster                            = aws_ecs_cluster.production-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.shipping-prod-task.arn
     desired_count                      = 2
-    deployment_minimum_healthy_percent = 50
+    deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
     scheduling_strategy                = "REPLICA"
 
-    force_new_deployment = true
-
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
+        subnets         = [aws_subnet.prod_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
         security_groups = [aws_security_group.prod_sg.id]
         assign_public_ip = true
     }
@@ -106,13 +100,13 @@ resource "aws_ecs_service" "shipping-service-prod" {
     load_balancer {
       target_group_arn = aws_lb_target_group.shipping-service-prod-tg.arn
       container_name   = "shipping-service-prod-container"
-      container_port   = 80
+      container_port   = 8080
     }
 
     depends_on = [
         aws_ecs_task_definition.shipping-prod-task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_lb_listener.http_listener_shipping_prod,
+        aws_lb_target_group.shipping-service-prod-tg,
     ]
 }
 
@@ -126,7 +120,7 @@ resource "aws_ecs_task_definition" "shipping-prod-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "shipping-prod-container"
+        name      = "shipping-service-prod-container"
         image     = var.docker_images["shipping-service-prod"]
        
         # environment = [
@@ -137,9 +131,9 @@ resource "aws_ecs_task_definition" "shipping-prod-task" {
         # ]
         essential = true
         portMappings = [{
-            protocol      = "tcp"
-            containerPort = 80
-            hostPort      = 80
+            protocol = "tcp"
+            containerPort = 8080
+            hostPort      = 8080
         }]
         logConfiguration = {
             logDriver = "awslogs"
@@ -170,15 +164,13 @@ resource "aws_ecs_service" "payments-service-prod" {
     cluster                            = aws_ecs_cluster.production-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.payments-prod-task.arn
     desired_count                      = 2
-    deployment_minimum_healthy_percent = 50
+    deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
     scheduling_strategy                = "REPLICA"
 
-    force_new_deployment = true
-
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
+        subnets         = [aws_subnet.prod_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
         security_groups = [aws_security_group.prod_sg.id]
         assign_public_ip = true
     }
@@ -186,13 +178,13 @@ resource "aws_ecs_service" "payments-service-prod" {
     load_balancer {
       target_group_arn = aws_lb_target_group.payments-service-prod-tg.arn
       container_name   = "payments-service-prod-container"
-      container_port   = 80
+      container_port   = 8080
     }
 
     depends_on = [
         aws_ecs_task_definition.payments-prod-task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_lb_listener.http_listener_products_prod,
+        aws_lb_target_group.payments-service-prod-tg,
     ]
 }
 
@@ -206,7 +198,7 @@ resource "aws_ecs_task_definition" "payments-prod-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "payments-prod-container"
+        name      = "payments-service-prod-container"
         image     = var.docker_images["payments-service-prod"]
        
         # environment = [
@@ -217,9 +209,9 @@ resource "aws_ecs_task_definition" "payments-prod-task" {
         # ]
         essential = true
         portMappings = [{
-            protocol      = "tcp"
-            containerPort = 80
-            hostPort      = 80
+            protocol = "tcp"
+            containerPort = 8080
+            hostPort      = 8080
         }]
         logConfiguration = {
             logDriver = "awslogs"
@@ -248,29 +240,26 @@ resource "aws_ecs_service" "orders-service-prod" {
     cluster                            = aws_ecs_cluster.production-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.orders-prod-task.arn
     desired_count                      = 2
-    deployment_minimum_healthy_percent = 50
+    deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
-    scheduling_strategy                = "REPLICA"
-
-    force_new_deployment = true
 
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
+        subnets         = [aws_subnet.prod_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
         security_groups = [aws_security_group.prod_sg.id]
         assign_public_ip = true
     }
 
     load_balancer {
       target_group_arn = aws_lb_target_group.orders-service-prod-tg.arn
-      container_name   = "orders-prod-container"
-      container_port   = 80
+      container_name   = "orders-service-prod-container"
+      container_port   = 8080
     }
 
     depends_on = [
         aws_ecs_task_definition.orders-prod-task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_lb_listener.http_listener_products_prod,
+        aws_lb_target_group.orders-service-prod-tg,
     ]
 }
 
@@ -284,20 +273,14 @@ resource "aws_ecs_task_definition" "orders-prod-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "orders-prod-container"
+        name      = "orders-service-prod-container"
         image     = var.docker_images["orders-service-prod"]
        
-        # environment = [
-        #     {
-        #         name  = ""
-        #         value = ""
-        #     }
-        # ]
         essential = true
         portMappings = [{
-            protocol      = "tcp"
-            containerPort = 80
-            hostPort      = 80
+            protocol = "tcp"
+            containerPort = 8080
+            hostPort      = 8080
         }]
         logConfiguration = {
             logDriver = "awslogs"
@@ -310,8 +293,16 @@ resource "aws_ecs_task_definition" "orders-prod-task" {
         }
     }])
 
+     depends_on = [
+        
+        aws_lb.payments-service-prod-alb,
+        aws_lb.shipping-service-prod-alb,
+        aws_lb.products-service-prod-alb
+      ]
+
     runtime_platform {
         cpu_architecture        = "X86_64"
         operating_system_family = "LINUX"
     }
+
 }

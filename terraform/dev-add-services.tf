@@ -9,15 +9,13 @@ resource "aws_ecs_service" "products-service-dev" {
     cluster                            = aws_ecs_cluster.develop-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.products-dev-task.arn
     desired_count                      = 2
-    deployment_minimum_healthy_percent = 50
+    deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
     scheduling_strategy                = "REPLICA"
 
-    force_new_deployment = true
-
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
+        subnets         = [aws_subnet.dev_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
         security_groups = [aws_security_group.dev_sg.id]
         assign_public_ip = true
     }
@@ -25,13 +23,13 @@ resource "aws_ecs_service" "products-service-dev" {
     load_balancer {
       target_group_arn = aws_lb_target_group.products-service-dev-tg.arn
       container_name   = "products-service-dev-container"
-      container_port   = 80
+      container_port   = 8080
     }
 
     depends_on = [
-        aws_ecs_task_definition.task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_ecs_task_definition.products-dev-task,
+        aws_lb_listener.http_listener_products_dev,
+        aws_lb_target_group.products-service-dev-tg,
     ]
 }
 
@@ -45,7 +43,7 @@ resource "aws_ecs_task_definition" "products-dev-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "products-dev-container"
+        name      = "products-service-dev-container"
         image     = var.docker_images["products-service-dev"]
        
         # environment = [
@@ -57,8 +55,8 @@ resource "aws_ecs_task_definition" "products-dev-task" {
         essential = true
         portMappings = [{
             protocol      = "tcp"
-            containerPort = 80
-            hostPort      = 80
+            containerPort = 8080
+            hostPort      = 8080
         }]
         logConfiguration = {
             logDriver = "awslogs"
@@ -90,7 +88,7 @@ resource "aws_ecs_service" "shipping-service-dev" {
     cluster                            = aws_ecs_cluster.develop-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.shipping-dev-task.arn
     desired_count                      = 2
-    deployment_minimum_healthy_percent = 50
+    deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
     scheduling_strategy                = "REPLICA"
@@ -98,7 +96,7 @@ resource "aws_ecs_service" "shipping-service-dev" {
     force_new_deployment = true
 
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
+        subnets         = [aws_subnet.dev_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
         security_groups = [aws_security_group.dev_sg.id]
         assign_public_ip = true
     }
@@ -106,13 +104,13 @@ resource "aws_ecs_service" "shipping-service-dev" {
     load_balancer {
       target_group_arn = aws_lb_target_group.shipping-service-dev-tg.arn
       container_name   = "shipping-service-dev-container"
-      container_port   = 80
+      container_port   = 8080
     }
 
     depends_on = [
         aws_ecs_task_definition.shipping-dev-task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_lb_listener.http_listener_products_dev,
+        aws_lb_target_group.shipping-service-dev-tg,
     ]
 }
 
@@ -126,7 +124,7 @@ resource "aws_ecs_task_definition" "shipping-dev-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "shipping-dev-container"
+        name      = "shipping-service-dev-container"
         image     = var.docker_images["shipping-service-dev"]
        
         # environment = [
@@ -138,8 +136,8 @@ resource "aws_ecs_task_definition" "shipping-dev-task" {
         essential = true
         portMappings = [{
             protocol      = "tcp"
-            containerPort = 80
-            hostPort      = 80
+            containerPort = 8080
+            hostPort      = 8080
         }]
         logConfiguration = {
             logDriver = "awslogs"
@@ -170,7 +168,7 @@ resource "aws_ecs_service" "payments-service-dev" {
     cluster                            = aws_ecs_cluster.develop-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.payments-dev-task.arn
     desired_count                      = 2
-    deployment_minimum_healthy_percent = 50
+    deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
     scheduling_strategy                = "REPLICA"
@@ -178,7 +176,7 @@ resource "aws_ecs_service" "payments-service-dev" {
     force_new_deployment = true
 
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
+        subnets         = [aws_subnet.dev_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
         security_groups = [aws_security_group.dev_sg.id]
         assign_public_ip = true
     }
@@ -186,13 +184,13 @@ resource "aws_ecs_service" "payments-service-dev" {
     load_balancer {
       target_group_arn = aws_lb_target_group.payments-service-dev-tg.arn
       container_name   = "payments-service-dev-container"
-      container_port   = 80
+      container_port   = 8080
     }
 
     depends_on = [
         aws_ecs_task_definition.payments-dev-task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_lb_listener.http_listener_products_dev,
+        aws_lb_target_group.payments-service-dev-tg,
     ]
 }
 
@@ -206,7 +204,7 @@ resource "aws_ecs_task_definition" "payments-dev-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "payments-dev-container"
+        name      = "payments-service-dev-container"
         image     = var.docker_images["payments-service-dev"]
        
         # environment = [
@@ -218,8 +216,8 @@ resource "aws_ecs_task_definition" "payments-dev-task" {
         essential = true
         portMappings = [{
             protocol      = "tcp"
-            containerPort = 80
-            hostPort      = 80
+            containerPort = 8080
+            hostPort      = 8080
         }]
         logConfiguration = {
             logDriver = "awslogs"
@@ -248,7 +246,7 @@ resource "aws_ecs_service" "orders-service-dev" {
     cluster                            = aws_ecs_cluster.develop-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.orders-dev-task.arn
     desired_count                      = 2
-    deployment_minimum_healthy_percent = 50
+    deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
     scheduling_strategy                = "REPLICA"
@@ -256,7 +254,7 @@ resource "aws_ecs_service" "orders-service-dev" {
     force_new_deployment = true
 
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
+        subnets         = [aws_subnet.dev_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
         security_groups = [aws_security_group.dev_sg.id]
         assign_public_ip = true
     }
@@ -264,13 +262,13 @@ resource "aws_ecs_service" "orders-service-dev" {
     load_balancer {
       target_group_arn = aws_lb_target_group.orders-service-dev-tg.arn
       container_name   = "orders-service-dev-container"
-      container_port   = 80
+      container_port   = 8080
     }
 
     depends_on = [
         aws_ecs_task_definition.orders-dev-task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_lb_listener.http_listener_products_dev,
+        aws_lb_target_group.orders-service-dev-tg,
     ]
 }
 
@@ -284,20 +282,14 @@ resource "aws_ecs_task_definition" "orders-dev-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "orders-dev-container"
+        name      = "orders-service-dev-container"
         image     = var.docker_images["orders-service-dev"]
        
-        # environment = [
-        #     {
-        #         name  = ""
-        #         value = ""
-        #     }
-        # ]
         essential = true
         portMappings = [{
             protocol      = "tcp"
-            containerPort = 80
-            hostPort      = 80
+            containerPort = 8080
+            hostPort      = 8080
         }]
         logConfiguration = {
             logDriver = "awslogs"
@@ -309,6 +301,13 @@ resource "aws_ecs_task_definition" "orders-dev-task" {
             }
         }
     }])
+
+      depends_on = [
+        
+        aws_lb.payments-service-prod-alb,
+        aws_lb.shipping-service-prod-alb,
+        aws_lb.products-service-prod-alb
+      ]
 
     runtime_platform {
         cpu_architecture        = "X86_64"
