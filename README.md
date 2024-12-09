@@ -173,3 +173,35 @@ En este repositrorio se almacena toda la infraestructura del proyecto.
 
 Archivos terraform:
 ![Repos devops terraform](./doc-img/devops_tf.png)
+
+### Analisis de codigo estatico
+
+Para el analisis de codigo estatico de los repositorios de los microservicios, utilizamos la herramienta SonarCloud, la cual realiza analisis para detectar fallas, vulneravilidad o mejoras en el codigo.
+
+Si alguna de estas fallas surge, el pipeline no seguira su ejecuccion, y el depliegue se cancelara.
+
+```
+- name: Analisis SonarCloud
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=obligatorio-devops-corbalan-arzuaga
+            -Dsonar.projectKey=Obligatorio-DevOps-Corbalan-Arzuaga_shipping-service
+            -Dsonar.sources=.
+            -Dsonar.java.binaries=target/classes
+            -Dsonar.exclusions=**/node_modules/**
+            -Dsonar.branch.name=${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+            -Dsonar.verbose=true
+            
+      - name: Verificar resultados del análisis en SonarCloud
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+          SONAR_HOST_URL: "https://sonarcloud.io"
+  
+      - name: Mostrar el estado del Quality Gate
+        run: |
+         echo "El estado del Quality Gate es: ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+```
