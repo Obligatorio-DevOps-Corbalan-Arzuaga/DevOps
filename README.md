@@ -152,13 +152,24 @@ Utilizamos esta estrategia para los repositorios de los aplicativos, donde creim
 Se muestra el inicio de cada semana de trabajo, en el tablero kanban que utilizamos a lo largo del proyecto, en la herramienta **Trello**.
 
 Semana 1:
-![Orders sonar error](./doc-img/kanban/semana-1.png)
+![Semana 1](./doc-img/kanban/semana-1.png)
 
 Semana 2:
-![Orders sonar error](./doc-img/kanban/semana-2.png)
+![Semana 2](./doc-img/kanban/semana-2.png)
 
 Semana 3:
-![Orders sonar error](./doc-img/kanban/semana-3.png)
+![Semana 3](./doc-img/kanban/semana-3.png)
 
 Semana 4:
-![Orders sonar error](./doc-img/kanban/semana-4.png)
+![Semana 4](./doc-img/kanban/semana-4.png)
+
+## Repositorios GitHub
+
+Almacenamos todos los repositorios en GitHub
+![Repos github](./doc-img/repositorios_github.png)
+
+### Repositorio DevOps:
+En este repositrorio se almacena toda la infraestructura del proyecto.
+
+Archivos terraform:
+![Repos devops terraform](./doc-img/devops_tf.png)
