@@ -106,16 +106,7 @@ h. **Construir imagen Docker:**
 - Se crea una imagen Docker del microservicio, etiquetándola con el SHA del commit actual. Esto asegura que cada imagen Docker tenga un tag único asociado al commit que la generó.  
 
 i. **Subir la imagen Docker a Amazon ECR:**  
-- La imagen construida se sube al repositorio de contenedores de Amazon ECR con la etiqueta generada.  
-
-j. **Desplegar infraestructura con Terraform:**  
-- Se dispara hacia un repositorio remoto de DevOps utilizando `repository-dispatch`. Este evento incluye un payload con información de la imagen Docker, el entorno correspondiente y el proyecto. Esto activa un workflow en el repositorio DevOps donde se manejará la etapa de CD.  
-
-La integración de Orders en la rama main nos presentó un error en el Quality Gate, por lo que se detuvo el flujo:  
-![Orders pipeline error](./doc-img/orders-pipeline-error.png)  
-
-Reporte de Orders:  
-![Orders sonar error](./doc-img/orders-sonar.png)  
+- La imagen construida se sube al repositorio de contenedores de Amazon ECR con la etiqueta generada.   
 
 ### FrontEnd
 #### Pipeline CI
@@ -144,8 +135,20 @@ Para administrar los proyectos, utilizamos repositorios GitHub (6 en total), e i
 #### Trunk-Based:
 Utilizamos esta estrategia para el repositorio DevOps, donde almacenamos toda nuestra infraestructura generada para los repositorios de los microservicios.  
 
+![Trunk based](./doc-img/diagramas/trunkbased.jpeg)  
+
 #### GitFlow:
-Utilizamos esta estrategia para los repositorios de los aplicativos, donde creímos más conveniente priorizar la estrategia de ambientes.  
+Utilizamos esta estrategia para los repositorios de los aplicativos, donde creímos más conveniente priorizar la estrategia de rama por ambientes, y asi tener un mayor control sobre estos, pudiendo generar diferencias de codigo, configuracion, etc. entre ambientes segun sea conveniente.  
+
+En este modelo, los cambios que se desean integrar en el ambiente de develop deben ser realizados en una rama de tipo feature. Una vez que las características o funcionalidades están listas, se fusionan de vuelta a develop.
+
+Posteriormente, para integrar los cambios a staging, se crea una rama de tipo release a partir de develop. Esta rama es utilizada para realizar pruebas finales y ajustes antes de la integración en el ambiente de producción.
+
+Si durante el proceso de integración en staging se detectan problemas o errores que requieren corrección, se debe crear una rama de tipo bugfix para implementar y validar las soluciones necesarias. Una vez realizados los arreglos, los cambios de la rama bugfix se integran nuevamente en la rama release.
+
+Finalmente, los cambios validados en staging se trasladan a la rama release, la cual es la que se integra en main, marcando el punto de lanzamiento en el ambiente de producción.
+
+![Trunk based](./doc-img/diagramas/gitflow.jpeg)  
 
 ## Tablero kanban
 
@@ -208,8 +211,33 @@ Si alguna de estas fallas surge, el pipeline no seguirá su ejecución, y el des
     echo "El estado del Quality Gate es: ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
 ```
 
+A continuacion dejamos evidencia de algunos analisis que obtuvimos.
+
+La integración de Orders en la rama main nos presentó un error en el Quality Gate, por lo que se detuvo el flujo:  
+![Orders pipeline error](./doc-img/sonarcloud/orders-pipeline-error.png)  
+
+Reporte de Orders:  
+![Orders sonar error](./doc-img/sonarcloud/orders-sonar.png) 
+
+Reporte de Payments:
+![Payments sonar error](./doc-img/sonarcloud/payments.png) 
+
+Reporte de Shipping:
+![Shipping sonar error](./doc-img/sonarcloud/shipping.png) 
+
+Reporte de Products:
+![Products sonar error](./doc-img/sonarcloud/products.png) 
+
 ### Gestion de imagenes de contenedores
 Para gestionar y administrar las imagenes de los contenedores utilizamos ECR.
 Elegimos esta herramienta por sobre Docker Hub, para seguir la linea de servicios AWS que optamos por utilizar, obteniendo asi una integracion mas facil con AWS ECS.
 
 ![Repositorios ECR](./doc-img/ecr-repos.png)
+
+Bibliografia:
+Dejamos referencias a diversas fuentes de informacion que utilizamos a lo largo del proyecto, para complementar el conocimiento adquirido durante el taller, asi como para enfrentar errores e inconvenientes presentados, y que no fueron necesariamente abordados en profundidad en el taller.
+
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs
+- https://www.youtube.com/watch?v=FRdWYDBu4yk
+- https://www.youtube.com/watch?v=81rQ5KgETs0&ab_channel=AntonPutra
+- https://www.youtube.com/watch?v=1m54kzfjGtM&t=1658s&ab_channel=kodEdge
