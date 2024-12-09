@@ -24,13 +24,13 @@ resource "aws_lb_target_group" "products-service-prod-tg" {
   target_type = "ip"
 
   health_check {
-    path                = "/products"
-    protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 300
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
+    path            = "/products"
+    port            = 8080
+    # matcher             = "200"
+    # interval            = 300
+    # timeout             = 5
+    # healthy_threshold   = 2
+    # unhealthy_threshold = 2
   }
 
   tags = {
@@ -40,7 +40,7 @@ resource "aws_lb_target_group" "products-service-prod-tg" {
 
 resource "aws_lb_listener" "http_listener_products_prod" {
   load_balancer_arn = aws_lb.products-service-prod-alb.arn
-  port              = 80
+  port              = "8080"
   protocol          = "HTTP"
 
   default_action {
@@ -60,7 +60,7 @@ resource "aws_lb_listener_rule" "http_listener_rule_products_prod" {
 
   condition {
     path_pattern {
-      values = ["/*"]
+      values = ["/products"]
     }
   }
 }
@@ -92,13 +92,14 @@ resource "aws_lb_target_group" "payments-service-prod-tg" {
   target_type = "ip"
 
   health_check {
-    path                = "/payments"
-    protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 300
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
+    path = "/payments"
+    port = 8080
+    # protocol            = "HTTP"
+    # matcher             = "200"
+    # interval            = 300
+    # timeout             = 5
+    # healthy_threshold   = 2
+    # unhealthy_threshold = 2
   }
 
   tags = {
@@ -108,7 +109,7 @@ resource "aws_lb_target_group" "payments-service-prod-tg" {
 
 resource "aws_lb_listener" "http_listener_payments_prod" {
   load_balancer_arn = aws_lb.payments-service-prod-alb.arn
-  port              = 80
+  port              = "8080"
   protocol          = "HTTP"
 
   default_action {
@@ -128,7 +129,7 @@ resource "aws_lb_listener_rule" "http_listener_rule_payments_prod" {
    
   condition {
     path_pattern {
-      values = ["/*"]
+      values = ["/payments"]
     }
   }
 
@@ -160,13 +161,13 @@ resource "aws_lb_target_group" "shipping-service-prod-tg" {
   target_type = "ip"
 
   health_check {
-    path                = "/shipping"
-    protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 300
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
+    path = "/shipping/c"
+    port = 8080
+    # matcher             = "200"
+    # interval            = 300
+    # timeout             = 5
+    # healthy_threshold   = 2
+    # unhealthy_threshold = 2
   }
 
   tags = {
@@ -176,7 +177,7 @@ resource "aws_lb_target_group" "shipping-service-prod-tg" {
 
 resource "aws_lb_listener" "http_listener_shipping_prod" {
   load_balancer_arn = aws_lb.shipping-service-prod-alb.arn
-  port              = 80
+  port              = "8080"
   protocol          = "HTTP"
 
   default_action {
@@ -196,7 +197,7 @@ resource "aws_lb_listener_rule" "http_listener_rule_shipping_prod" {
   
   condition {
     path_pattern {
-      values = ["/*"]
+      values = ["/shipping/c"]
     }
   }
 }
@@ -229,13 +230,14 @@ resource "aws_lb_target_group" "orders-service-prod-tg" {
   target_type = "ip"
 
   health_check {
-    path                = "/orders"
-    protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 300
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
+    path = "/orders"
+    port = 8080
+    # protocol            = "HTTP"
+    # matcher             = "200"
+    # interval            = 300
+    # timeout             = 5
+    # healthy_threshold   = 2
+    # unhealthy_threshold = 2
   }
 
   tags = {
@@ -245,7 +247,7 @@ resource "aws_lb_target_group" "orders-service-prod-tg" {
 
 resource "aws_lb_listener" "http_listener_orders_prod" {
   load_balancer_arn = aws_lb.orders-service-prod-alb.arn
-  port              = 80
+  port              = "8080"
   protocol          = "HTTP"
 
   default_action {
@@ -265,7 +267,7 @@ resource "aws_lb_listener_rule" "http_listener_rule_orders_prod" {
 
   condition {
     path_pattern {
-      values = ["/*"]
+      values = ["/orders"]
     }
   }
 }

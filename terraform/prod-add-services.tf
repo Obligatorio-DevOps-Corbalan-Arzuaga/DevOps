@@ -8,13 +8,11 @@ resource "aws_ecs_service" "products-service-prod" {
     name                               = "products-service-prod"
     cluster                            = aws_ecs_cluster.production-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.products-prod-task.arn
-    desired_count                      = 1
+    desired_count                      = 2
     deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
     scheduling_strategy                = "REPLICA"
-
-    force_new_deployment = true
 
     network_configuration {
         subnets         = [aws_subnet.prod_public_subnet_1.id, aws_subnet.prod_public_subnet_2.id]
@@ -56,6 +54,7 @@ resource "aws_ecs_task_definition" "products-prod-task" {
         # ]
         essential = true
         portMappings = [{
+            protocol = "tcp"
             containerPort = 8080
             hostPort      = 8080
         }]
@@ -82,13 +81,11 @@ resource "aws_ecs_task_definition" "products-prod-task" {
 # ----------------------------------------------------------------------------------------------------------------------------
 
 
-
-
 resource "aws_ecs_service" "shipping-service-prod" {
     name                               = "shipping-service-prod"
     cluster                            = aws_ecs_cluster.production-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.shipping-prod-task.arn
-    desired_count                      = 1
+    desired_count                      = 2
     deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
@@ -108,7 +105,7 @@ resource "aws_ecs_service" "shipping-service-prod" {
 
     depends_on = [
         aws_ecs_task_definition.shipping-prod-task,
-        aws_lb_listener.http_listener_products_prod,
+        aws_lb_listener.http_listener_shipping_prod,
         aws_lb_target_group.shipping-service-prod-tg,
     ]
 }
@@ -134,6 +131,7 @@ resource "aws_ecs_task_definition" "shipping-prod-task" {
         # ]
         essential = true
         portMappings = [{
+            protocol = "tcp"
             containerPort = 8080
             hostPort      = 8080
         }]
@@ -165,7 +163,7 @@ resource "aws_ecs_service" "payments-service-prod" {
     name                               = "payments-service-prod"
     cluster                            = aws_ecs_cluster.production-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.payments-prod-task.arn
-    desired_count                      = 1
+    desired_count                      = 2
     deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
@@ -211,6 +209,7 @@ resource "aws_ecs_task_definition" "payments-prod-task" {
         # ]
         essential = true
         portMappings = [{
+            protocol = "tcp"
             containerPort = 8080
             hostPort      = 8080
         }]
@@ -240,7 +239,7 @@ resource "aws_ecs_service" "orders-service-prod" {
     name                               = "orders-service-prod"
     cluster                            = aws_ecs_cluster.production-ecs-cluster.arn
     task_definition                    = aws_ecs_task_definition.orders-prod-task.arn
-    desired_count                      = 1
+    desired_count                      = 2
     deployment_minimum_healthy_percent = 100
     deployment_maximum_percent         = 200
     launch_type                        = "FARGATE"
@@ -277,12 +276,6 @@ resource "aws_ecs_task_definition" "orders-prod-task" {
         name      = "orders-service-prod-container"
         image     = var.docker_images["orders-service-prod"]
        
-        environment = [
-            {
-                name = "APP_ARGS"
-                value = "${aws_apigatewayv2_stage.prod_api_stage.invoke_url}/payments ${aws_apigatewayv2_stage.prod_api_stage.invoke_url}/shipping ${aws_apigatewayv2_stage.prod_api_stage.invoke_url}/products"
-            }
-        ]
         essential = true
         portMappings = [{
             protocol = "tcp"
@@ -301,11 +294,15 @@ resource "aws_ecs_task_definition" "orders-prod-task" {
     }])
 
      depends_on = [
-        aws_apigatewayv2_stage.prod_api_stage
+        
+        aws_lb.payments-service-prod-alb,
+        aws_lb.shipping-service-prod-alb,
+        aws_lb.products-service-prod-alb
       ]
 
     runtime_platform {
         cpu_architecture        = "X86_64"
         operating_system_family = "LINUX"
     }
+
 }
