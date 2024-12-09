@@ -17,7 +17,7 @@ resource "aws_ecs_service" "products-service-dev" {
     force_new_deployment = true
 
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
+        subnets         = [aws_subnet.dev_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
         security_groups = [aws_security_group.dev_sg.id]
         assign_public_ip = true
     }
@@ -29,9 +29,9 @@ resource "aws_ecs_service" "products-service-dev" {
     }
 
     depends_on = [
-        aws_ecs_task_definition.task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_ecs_task_definition.products-dev-task,
+        aws_lb_listener.http_listener_products_dev,
+        aws_lb_target_group.products-service-dev-tg,
     ]
 }
 
@@ -45,7 +45,7 @@ resource "aws_ecs_task_definition" "products-dev-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "products-dev-container"
+        name      = "products-service-dev-container"
         image     = var.docker_images["products-service-dev"]
        
         # environment = [
@@ -98,7 +98,7 @@ resource "aws_ecs_service" "shipping-service-dev" {
     force_new_deployment = true
 
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
+        subnets         = [aws_subnet.dev_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
         security_groups = [aws_security_group.dev_sg.id]
         assign_public_ip = true
     }
@@ -111,8 +111,8 @@ resource "aws_ecs_service" "shipping-service-dev" {
 
     depends_on = [
         aws_ecs_task_definition.shipping-dev-task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_lb_listener.http_listener_products_dev,
+        aws_lb_target_group.shipping-service-dev-tg,
     ]
 }
 
@@ -126,7 +126,7 @@ resource "aws_ecs_task_definition" "shipping-dev-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "shipping-dev-container"
+        name      = "shipping-service-dev-container"
         image     = var.docker_images["shipping-service-dev"]
        
         # environment = [
@@ -178,7 +178,7 @@ resource "aws_ecs_service" "payments-service-dev" {
     force_new_deployment = true
 
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
+        subnets         = [aws_subnet.dev_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
         security_groups = [aws_security_group.dev_sg.id]
         assign_public_ip = true
     }
@@ -191,8 +191,8 @@ resource "aws_ecs_service" "payments-service-dev" {
 
     depends_on = [
         aws_ecs_task_definition.payments-dev-task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_lb_listener.http_listener_products_dev,
+        aws_lb_target_group.payments-service-dev-tg,
     ]
 }
 
@@ -206,7 +206,7 @@ resource "aws_ecs_task_definition" "payments-dev-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "payments-dev-container"
+        name      = "payments-service-dev-container"
         image     = var.docker_images["payments-service-dev"]
        
         # environment = [
@@ -256,7 +256,7 @@ resource "aws_ecs_service" "orders-service-dev" {
     force_new_deployment = true
 
     network_configuration {
-        subnets         = [aws_subnet.pord_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
+        subnets         = [aws_subnet.dev_public_subnet_1.id, aws_subnet.dev_public_subnet_2.id]
         security_groups = [aws_security_group.dev_sg.id]
         assign_public_ip = true
     }
@@ -269,8 +269,8 @@ resource "aws_ecs_service" "orders-service-dev" {
 
     depends_on = [
         aws_ecs_task_definition.orders-dev-task,
-        aws_lb_listener.http_listener,
-        aws_lb_target_group.ecs_tg,
+        aws_lb_listener.http_listener_products_dev,
+        aws_lb_target_group.orders-service-dev-tg,
     ]
 }
 
@@ -284,7 +284,7 @@ resource "aws_ecs_task_definition" "orders-dev-task" {
     task_role_arn            = var.rol_lab
 
     container_definitions = jsonencode([{
-        name      = "orders-dev-container"
+        name      = "orders-service-dev-container"
         image     = var.docker_images["orders-service-dev"]
        
         # environment = [
