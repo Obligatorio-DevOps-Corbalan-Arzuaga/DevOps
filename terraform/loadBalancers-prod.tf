@@ -26,11 +26,6 @@ resource "aws_lb_target_group" "products-service-prod-tg" {
   health_check {
     path            = "/products"
     port            = 8080
-    # matcher             = "200"
-    # interval            = 300
-    # timeout             = 5
-    # healthy_threshold   = 2
-    # unhealthy_threshold = 2
   }
 
   tags = {
