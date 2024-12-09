@@ -123,3 +123,26 @@ Reporte de Orders:
 Este workflow de CI automatiza el proceso de construcción y despliegue del frontend en github Actions. Se activa automáticamente cuando se realiza un push o pull request en las ramas develop, staging, o main. El objetivo es asegurarse de que cada cambio en el código del frontend pase por un proceso de construcción, empaquetado y despliegue de manera eficiente.
 En la primera parte del flujo, el frontend se construye usando Node.js. Se instalan todas las dependencias necesarias y luego se ejecuta el comando de construcción para compilar el proyecto en una versión optimizada para producción. Esto asegura que el frontend esté listo para ser empaquetado y desplegado en un entorno real. Ademas, se realiza un analisis de calidad del codigo mediante **SonarCloud**, donde si se registran inconvenientes, el pipeline no seguira adelante.
 Una vez pasadas estas etapas, se depliega automaticamente a un AWS Bucket S3.
+
+### Secrets de la organizacion
+En los pipelines, se utilizaron secrets establecidos a nivel de la organizacion
+- **APP_<nombre_ms>_JAR**: Para ubicar el archivo .jar generado por Maven.
+- **AWS_ACCESS_KEY_ID**: La Key ID de la sesion del laboratorio de AWS Academy.
+- **AWS_ACCOUNT_ID**: El ID de la cuenta de AWS Academy.
+- **AWS_REGION**: Region de la cuenta AWS Academy y de los recursos AWS.
+- **AWS_SECRET_ACCESS_KEY**: Clave de acceso de la sesion de la cuenta AWS Academy.
+- **AWS_SESSION_TOKEN**: Token de la sesion de AWS Academy Lab.
+- **DOCKER_USERNAME**: Usuario de la cuenta de Docker.
+- **DOCKER_PASSWORD**: Contraseña de la cuenta de Docker.
+- **ECR_URI_<nombre_ms>_<ambiente>**: La URI del repo ECR para un MS en un ambiente.
+- **SONARCLOUD_TOKEN**: Token de sonarcloud.
+
+
+## Estrategia de ramas:
+Para administrar los proyectos, utilizamos repositorios GitHub (6 en total), e implemenamos la estrategia de ramas Trunk-Based para el repositorio DevOps, y GitFlow para los 5 repositorios de aplicativos.
+
+#### Trunk-Based:
+Utilizamos esta estrategia para el repositorio DevOps, done almacenamos toda nuestra infraestructura generada para los repositorio de los microservicios.
+
+### GitFlow:
+Utilizamos esta estrategia para los repositorios de los aplicativos, donde creimos mas conveniente priorizar la estartegia de ambientes.
