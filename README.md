@@ -146,3 +146,19 @@ Utilizamos esta estrategia para el repositorio DevOps, done almacenamos toda nue
 
 ### GitFlow:
 Utilizamos esta estrategia para los repositorios de los aplicativos, donde creimos mas conveniente priorizar la estartegia de ambientes.
+
+## Tablero kanban
+
+Se muestra el inicio de cada semana de trabajo, en el tablero kanban que utilizamos a lo largo del proyecto, en la herramienta **Trello**.
+
+Semana 1:
+![Orders sonar error](./doc-img/kanban/semana-1.png)
+
+Semana 2:
+![Orders sonar error](./doc-img/kanban/semana-2.png)
+
+Semana 3:
+![Orders sonar error](./doc-img/kanban/semana-3.png)
+
+Semana 4:
+![Orders sonar error](./doc-img/kanban/semana-4.png)
